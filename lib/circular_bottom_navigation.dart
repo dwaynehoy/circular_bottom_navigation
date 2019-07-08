@@ -18,6 +18,7 @@ class CircularBottomNavigation extends StatefulWidget {
   final Color selectedIconColor;
   final Color normalIconColor;
   final TextStyle labelStyle;
+  final int elevation;
   final Duration animationDuration;
   final CircularBottomNavSelectedCallback selectedCallback;
   final CircularBottomNavigationController controller;
@@ -32,6 +33,7 @@ class CircularBottomNavigation extends StatefulWidget {
         this.selectedIconColor = Colors.white,
         this.normalIconColor = Colors.grey,
         this.labelStyle = const TextStyle(fontWeight: FontWeight.bold),
+        this.elevation = 1,
         this.animationDuration = const Duration(milliseconds: 300),
         this.selectedCallback,
         this.controller})
@@ -53,6 +55,8 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
 
   int selectedPos;
   int previousSelectedPos;
+  List<BoxShadow> barShadow;
+  List<BoxShadow> indicatorShadow;
 
   CircularBottomNavigationController _controller;
 
@@ -93,6 +97,28 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
 
     itemsAnimation = Tween(begin: 0.0, end: 1.0)
         .animate(CurvedAnimation(parent: itemsController, curve: _animationsCurve));
+
+    //Invert shadow direction for bottom widgets
+    barShadow = widget.elevation == 0
+        ? []
+        : kElevationToShadow[widget.elevation].map((boxShadow){
+      return BoxShadow(
+          color: boxShadow.color,
+          offset: Offset(boxShadow.offset.dx, -boxShadow.offset.dy),
+          blurRadius: boxShadow.blurRadius,
+          spreadRadius: boxShadow.spreadRadius);
+    }).toList();
+
+    //Increase elevation for indicator as it sits on top of the tab bar
+    indicatorShadow =  widget.elevation == 0
+        ? []
+        : kElevationToShadow[widget.elevation + 1].map((boxShadow){
+      return BoxShadow(
+          color: boxShadow.color,
+          offset: Offset(boxShadow.offset.dx, -boxShadow.offset.dy),
+          blurRadius: boxShadow.blurRadius,
+          spreadRadius: boxShadow.spreadRadius);
+    }).toList();
   }
 
   Animation<double> makeSelectedPosAnimation(double begin, double end) {
@@ -114,7 +140,7 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
         .of(context)
         .size
         .width;
-    double fullHeight = widget.barHeight + (widget.circleSize / 2) + widget.circleStrokeWidth;
+    double fullHeight = widget.barHeight + (widget.circleSize / 2) + widget.circleStrokeWidth + 5;
     double sectionsWidth = fullWidth / widget.tabItems.length;
 
     //Create the boxes Rect
@@ -143,7 +169,7 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
         decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             color: widget.barBackgroundColor,
-            boxShadow: [new BoxShadow(color: Colors.grey, blurRadius: 2.0)]),
+            boxShadow: barShadow),
       ),
       top: fullHeight - widget.barHeight,
       left: 0,
@@ -157,12 +183,13 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
         decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: widget.tabItems[selectedPos].color,
-            border: Border.all(width: widget.circleStrokeWidth, color: widget.barBackgroundColor)),
+            border: Border.all(width: widget.circleStrokeWidth, color: widget.barBackgroundColor),
+            boxShadow: indicatorShadow),
       ),
       left: (selectedPosAnimation.value * sectionsWidth) +
           (sectionsWidth / 2) -
           (widget.circleSize / 2),
-      top: 0,
+      top: 5,
     ));
 
     //Here are the Icons and texts of items
