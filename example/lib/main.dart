@@ -30,11 +30,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   double bottomNavBarHeight = 60;
 
+  static TextStyle tabTextStyle = TextStyle(fontWeight: FontWeight.bold);
+
   List<TabItem> tabItems = List.of([
-    new TabItem(Icons.home, "Home", Colors.blue),
-    new TabItem(Icons.search, "Search", Colors.orange),
-    new TabItem(Icons.layers, "Reports", Colors.red),
-    new TabItem(Icons.notifications, "Notifications", Colors.cyan),
+    new TabItem(Icons.home, "Home", tabTextStyle.copyWith(color: Colors.blue)),
+    new TabItem(Icons.search, "Search", tabTextStyle.copyWith(color: Colors.orange)),
+    new TabItem(Icons.layers, "Reports", tabTextStyle.copyWith(color: Colors.red)),
+    new TabItem(Icons.notifications, "Notifications", tabTextStyle.copyWith(color: Colors.cyan)),
   ]);
 
   CircularBottomNavigationController _navigationController;
@@ -58,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget bodyContainer() {
-    Color selectedColor = tabItems[selectedPos].color;
+    Color selectedColor = tabItems[selectedPos].labelStyle.color;
     String slogan;
     switch (selectedPos) {
       case 0:

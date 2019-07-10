@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 class TabItem {
   IconData icon;
   String title;
-  Color color;
+  TextStyle labelStyle;
 
-  TabItem(this.icon, this.title, this.color);
+  TabItem(this.icon, this.title, this.labelStyle);
 }
